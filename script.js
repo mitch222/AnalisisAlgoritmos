@@ -1,66 +1,97 @@
-const canvas = document.getElementById('animacion');
-const ctx = canvas.getContext('2d');
+const canvas = document.getElementById("animacion");
+const ctx = canvas.getContext("2d");
 //Variables globales
-var lista = []
-var total = []
-var timeout = 0
-var timeTravel = 0
+var lista = [];
+var total = [];
+var timeout = 0;
+var timeTravel = 0;
+var waitUntil = 0;
 
-class ball  {
-  constructor(){
-    this.x = 50
-    this.y = 250
-    this.vx = 150 / timeTravel
-    this.radius = 25
-    this.color = 'blue'
+class ball {
+  constructor() {
+    this.x = 50;
+    this.y = 250;
+    this.vx = 150 / timeTravel;
+    this.movement = this.vx
+    this.radius = 25;
+    this.color = "blue";
   }
-  update(){
-    this.x += this.vx;
+  update() {
+    this.x += this.movement;
+  }
+  stop(){
+    
   }
   draw() {
-    
     ctx.beginPath();
     ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2, true);
     ctx.closePath();
     ctx.fillStyle = this.color;
     ctx.fill();
-    
   }
 }
 
-function handleCircles(){
-  for (let i = 0; i < lista.length; i++){
-        lista[i].update();
-        lista[i].draw();
-  }
-  if(timeout == 0){
-    var cir = new ball()
-    lista.push(cir)
-  }
-}
+function handleCircles() {
+  //Cracion de circulos
+  if (timeout == 0) {
+      var cir = new ball();
+      lista.push(cir);
+    }
+  //Animacion
+  for (let i = 0; i < lista.length; i++) {
+    lista[i].update();
+    lista[i].draw();
+  //Condiciones
+    console.log(lista)
+    
+    /*   if (lista.length > 2 && collision(lista[i], lista[i+1])){
+            lista[i + 1].movement = 0;
+       }*/
+    
+      if(lista[i].x >= 250 && lista[i].x <= 270){
+          lista[i].movement = 0  
+          lista[i].x = 300
+        }
+       
+      }
+    }    
+  
 
 function draw() {
-  if(total.length != 0){
-    ctx.clearRect(0,0, canvas.width, canvas.height);
-    ctx.fillStyle = 'red';
-    ctx.fillRect(200, 100, 200, 200)
-    handleCircles()
+  if (total.length != 0) {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = "red";
+    ctx.fillRect(200, 100, 200, 200);
+    handleCircles();
     requestAnimationFrame(draw);
 
-    if(timeout == 0 ){
-      timeout = total[0].llegada * 60 
-      timeTravel = total[0].llegada * 60
+    if (timeout == 0) {
+      timeout = total[0].llegada * 40;
+      timeTravel = total[0].llegada * 40;
       total.shift();
-      
     }
-    timeout --
-  }
-  else{
+    
+    if (timeout == 0) {
+      timeout = total[0].llegada * 10;
+      timeTravel = total[0].llegada * 10;
+      total.shift();
+    }
+    timeout--;
+  } else {
     cancelAnimationFrame(draw);
+  }
+}
+
+function collision(first, second) {
+  try{
+      if (second.x >= first.x - first.radius) {
+      return true;
+    }
+  }catch (error){
+    
   }
   
 }
-
 
 //Clases
 class Cliente {
@@ -79,7 +110,7 @@ class Cliente {
   set proceso(proceso) {
     this._proceso = proceso;
   }
-  
+
   get cont() {
     return this._cont;
   }
@@ -104,13 +135,12 @@ class Cliente {
     this._llegada = llegada;
   }
 
-  genEsperar(){
-    
-    this.cont = 0
+  genEsperar() {
+    this.cont = 0;
   }
-  
-  esperar(){
-    this.cont++
+
+  esperar() {
+    this.cont++;
   }
   genLlegada() {
     var x = randomNums();
@@ -156,66 +186,64 @@ class Cliente {
         this.espera = 9;
       }
     } else if (x < 0.4 && x >= 0.2) {
-        this.proceso = 2;
-        var y = randomNums();
+      this.proceso = 2;
+      var y = randomNums();
 
-        if (y < 0.2 && y >= 0) {
-          this.espera = 5;
-        } else if (y < 0.4 && y >= 0.2) {
-          this.espera = 6;
-        } else if (y < 0.6 && y >= 0.4) {
-          this.espera = 7;
-        } else if (y < 0.8 && y >= 0.6) {
-          this.espera = 8;
-        } else if (y < 1 && y >= 0.8) {
-          this.espera = 9;
-        }
+      if (y < 0.2 && y >= 0) {
+        this.espera = 5;
+      } else if (y < 0.4 && y >= 0.2) {
+        this.espera = 6;
+      } else if (y < 0.6 && y >= 0.4) {
+        this.espera = 7;
+      } else if (y < 0.8 && y >= 0.6) {
+        this.espera = 8;
+      } else if (y < 1 && y >= 0.8) {
+        this.espera = 9;
+      }
     } else if (x < 0.6 && x >= 0.4) {
       this.proceso = 3;
       var y = randomNums();
 
       if (y < 0.2 && y >= 0) {
-          this.espera = 5;
-        } else if (y < 0.4 && y >= 0.2) {
-          this.espera = 6;
-        } else if (y < 0.6 && y >= 0.4) {
-          this.espera = 7;
-        } else if (y < 0.8 && y >= 0.6) {
-          this.espera = 8;
-        } else if (y < 1 && y >= 0.8) {
-          this.espera = 9;
-        }
-      
+        this.espera = 5;
+      } else if (y < 0.4 && y >= 0.2) {
+        this.espera = 6;
+      } else if (y < 0.6 && y >= 0.4) {
+        this.espera = 7;
+      } else if (y < 0.8 && y >= 0.6) {
+        this.espera = 8;
+      } else if (y < 1 && y >= 0.8) {
+        this.espera = 9;
+      }
     } else if (x < 0.8 && x >= 0.6) {
       this.proceso = 4;
       var y = randomNums();
-          if (y < 0.2 && y >= 0) {
-          this.espera = 5;
-        } else if (y < 0.4 && y >= 0.2) {
-          this.espera = 6;
-        } else if (y < 0.6 && y >= 0.4) {
-          this.espera = 7;
-        } else if (y < 0.8 && y >= 0.6) {
-          this.espera = 8;
-        } else if (y < 1 && y >= 0.8) {
-          this.espera = 9;
-        }
-      
+      if (y < 0.2 && y >= 0) {
+        this.espera = 5;
+      } else if (y < 0.4 && y >= 0.2) {
+        this.espera = 6;
+      } else if (y < 0.6 && y >= 0.4) {
+        this.espera = 7;
+      } else if (y < 0.8 && y >= 0.6) {
+        this.espera = 8;
+      } else if (y < 1 && y >= 0.8) {
+        this.espera = 9;
+      }
     } else if (x < 1 && x >= 0.8) {
       this.proceso = 5;
       var y = randomNums();
 
       if (y < 0.2 && y >= 0) {
-          this.espera = 5;
-        } else if (y < 0.4 && y >= 0.2) {
-          this.espera = 6;
-        } else if (y < 0.6 && y >= 0.4) {
-          this.espera = 7;
-        } else if (y < 0.8 && y >= 0.6) {
-          this.espera = 8;
-        } else if (y < 1 && y >= 0.8) {
-          this.espera = 9;
-        }   
+        this.espera = 5;
+      } else if (y < 0.4 && y >= 0.2) {
+        this.espera = 6;
+      } else if (y < 0.6 && y >= 0.4) {
+        this.espera = 7;
+      } else if (y < 0.8 && y >= 0.6) {
+        this.espera = 8;
+      } else if (y < 1 && y >= 0.8) {
+        this.espera = 9;
+      }
     }
   }
 }
@@ -232,19 +260,18 @@ class Caja {
   llegada() {
     if (this.espera2 == 0) {
       var per = new Cliente();
-      
-      per.genEsperar()
+
+      per.genEsperar();
       per.genLlegada();
-      
+
       this.espera2 = per.llegada;
       this.fila.push(per);
       total.push(per);
-      
     } else {
       this.espera2--;
-      
+
       for (var i = 0; i < this.fila.length; i++) {
-        this.fila[i].esperar()
+        this.fila[i].esperar();
       }
     }
   }
@@ -255,23 +282,24 @@ class Caja {
       this.espera1 = this.fila[0].espera;
       if (this.max < this.fila[0].cont) {
         this.max = this.fila[0].cont;
-      } 
+      }
       this.fila.shift();
       this.atendidos++;
-    } 
-    else if (this.espera1 > 0) {
+    } else if (this.espera1 > 0) {
       this.espera1--;
-            
     }
   }
 
   resultados() {
     var noAt =
       "% no atendidos: " +
-      this.fila.length / (this.atendidos + this.fila.length)+ "| ";
+      this.fila.length / (this.atendidos + this.fila.length) +
+      "| ";
     var at =
-      "% atendidos: " + this.atendidos / (this.atendidos + this.fila.length) + "| ";
-    var total = "Atendidos : " + this.atendidos+ "| ";
+      "% atendidos: " +
+      this.atendidos / (this.atendidos + this.fila.length) +
+      "| ";
+    var total = "Atendidos : " + this.atendidos + "| ";
     var max = " Maximo tiempo de espera: " + this.max + " minutos";
     var msj = noAt + " " + at + " " + total + " " + max;
     return msj;
@@ -296,22 +324,16 @@ function simulacion(tiempo) {
   var cajero = new Caja();
   final.setHours(final.getHours() + parseInt(tiempo));
 
-
-  
   while (actual.getHours() != final.getHours()) {
-    
     //entrada a la fila
     cajero.llegada();
     cajero.atender(cont2);
     actual.setMinutes(actual.getMinutes() + 1);
     cont += 1;
     cont2 += 1;
-        
-  }  
+  }
   return cajero.resultados();
 }
-
-
 
 /* 
 Se Muestran los numeros aleatorios, el promedio y la varianza en el html
@@ -324,5 +346,5 @@ button.onclick = function (e) {
   e.preventDefault();
   var name = document.getElementById("name").value;
   document.getElementById("numero").innerHTML = simulacion(name);
-  draw()
-}
+  draw();
+};
